@@ -18,6 +18,7 @@ DYNALO_EXPORT const char** DYNALO_CALL HulaUtils::manifest(HulaScript::instance:
 		"runCommand",
 		"JSONParser",
 		"toJSON",
+		"currentTime",
 		NULL
 	};
 

@@ -18,7 +18,7 @@ add_library(HulaUtils SHARED
 	HulaUtils.cpp
 	HulaUtils.hpp
 	HulaScript.hpp 
-	HulaScript.cpp "json.cpp")
+	HulaScript.cpp "json.cpp" "datetime.cpp")
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/dynalo)
 set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 20)
