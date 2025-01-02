@@ -7,7 +7,7 @@ using namespace HulaUtils;
 void write_json(HulaScript::instance::value& current, std::stringstream& ss, HulaScript::instance& instance, int indent = -1, std::optional<std::string> json_property = std::nullopt) {
 	for (int i = 0; i < indent; i++) { ss << '\t'; }
 	if (json_property.has_value()) {
-		ss << json_property.value() << ": ";
+		ss << '\"' << json_property.value() << "\" : ";
 	}
 
 	if (current.check_type(HulaScript::instance::value::vtype::BOOLEAN)) {
@@ -254,18 +254,18 @@ HulaScript::instance::value json_scanner::parse_json()
 
 	char peeked = peek_char();
 	if (std::isdigit(peeked)) {
-		std::string numstr;
+		std::string num_str;
 		
 		do {
-			numstr.push_back(scan_char());
+			num_str.push_back(scan_char());
 		} while (std::isdigit(peek_char()) || peek_char() == '.');
 
 		if (peek_char() == 'r') {
 			scan_char();
-			return instance.parse_rational(numstr);
+			return instance.parse_rational(num_str);
 		}
 		else {
-			return HulaScript::instance::value(std::stod(numstr));
+			return HulaScript::instance::value(std::stod(num_str));
 		}
 	}
 	else if (peeked == '\"') {
@@ -283,6 +283,7 @@ HulaScript::instance::value json_scanner::parse_json()
 		
 		std::vector<HulaScript::instance::value> elements;
 		bool first = true;
+		consume_whitespace();
 		while (peek_char() != ']') {
 			if (first) {
 				first = false;
@@ -293,6 +294,7 @@ HulaScript::instance::value json_scanner::parse_json()
 				scan_char();
 			}
 			elements.push_back(parse_json());
+			consume_whitespace();
 		}
 		scan_char();
 		return instance.make_array(elements);
@@ -302,6 +304,7 @@ HulaScript::instance::value json_scanner::parse_json()
 
 		std::vector<std::pair<HulaScript::instance::value, HulaScript::instance::value>> elements;
 		bool first = true;
+		consume_whitespace();
 		while (peek_char() != '}') {
 			if (first) {
 				first = false;
@@ -313,9 +316,13 @@ HulaScript::instance::value json_scanner::parse_json()
 			}
 
 			auto key = parse_json();
+			instance.temp_gc_protect(key);
 			consume_whitespace();
 			match_char(':');
+			scan_char();
 			auto value = parse_json();
+			consume_whitespace();
+			instance.temp_gc_protect(value);
 
 			elements.push_back(std::make_pair(key, value));
 		}
@@ -324,6 +331,8 @@ HulaScript::instance::value json_scanner::parse_json()
 		HulaScript::ffi_table_helper helper(elements.size(), instance);
 		for (auto& key_value_pair : elements) {
 			helper.emplace(key_value_pair.first, key_value_pair.second);
+			instance.temp_gc_unprotect();
+			instance.temp_gc_unprotect();
 		}
 
 		if (!helper.get(std::string("@json_constructor")).check_type(HulaScript::instance::value::vtype::NIL)) {
