@@ -46,3 +46,10 @@ DYNALO_EXPORT HulaScript::instance::value DYNALO_CALL HulaUtils::gmTime(std::vec
 	auto dt = gmtime(&now);
 	return toDateTimeObject(dt, now, instance);
 }
+
+DYNALO_EXPORT HulaScript::instance::value DYNALO_CALL HulaUtils::unixTime(std::vector<HulaScript::instance::value>& args, HulaScript::instance& instance)
+{
+	time_t now;
+	time(&now);
+	return instance.rational_integer(now);
+}

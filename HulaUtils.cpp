@@ -20,6 +20,7 @@ DYNALO_EXPORT const char** DYNALO_CALL HulaUtils::manifest(HulaScript::instance:
 		"toJSON",
 		"localTime",
 		"gmTime",
+		"unixTime",
 		NULL
 	};
 

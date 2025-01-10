@@ -73,4 +73,5 @@ namespace HulaUtils {
 
 	DYNALO_EXPORT HulaScript::instance::value DYNALO_CALL localTime(std::vector<HulaScript::instance::value>& args, HulaScript::instance& instance);
 	DYNALO_EXPORT HulaScript::instance::value DYNALO_CALL gmTime(std::vector<HulaScript::instance::value>& args, HulaScript::instance& instance);
+	DYNALO_EXPORT HulaScript::instance::value DYNALO_CALL unixTime(std::vector<HulaScript::instance::value>& args, HulaScript::instance& instance);
 }
