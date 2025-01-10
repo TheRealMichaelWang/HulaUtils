@@ -117,6 +117,11 @@ namespace HulaScript {
 				return std::string(data.str);
 			}
 
+			size_t size(instance& instance) const {
+				expect_type(vtype::RATIONAL, instance);
+				return data.id;
+			}
+
 			const int64_t index(int64_t min, int64_t max, instance& instance) const;
 
 			template<bool IsTableHash>
@@ -397,7 +402,6 @@ namespace HulaScript {
 		std::unordered_map<size_t, uint32_t> method_id_lookup;
 		std::vector<instance::value(child_type::*)(std::vector<instance::value>& arguments, instance& instance)> methods;
 	};
-
 
 	template<typename child_type>
 	class foreign_getter_object : public foreign_method_object<child_type> {

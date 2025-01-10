@@ -6,6 +6,7 @@
 #include <cstdio>
 #include <ctime>
 #include "HulaScript.hpp"
+#include "process.h"
 
 #define DYNALO_EXPORT_SYMBOLS
 #include "dynalo/symbol_helper.hpp"
@@ -56,32 +57,6 @@ namespace HulaUtils {
 		}
 	};
 
-	class date_time_obj : public HulaScript::foreign_getter_object<date_time_obj> {
-	private:
-		time_t timestamp;
-		
-		HulaScript::instance::value get_day(HulaScript::instance& instance);
-		HulaScript::instance::value get_month(HulaScript::instance& instance);
-		HulaScript::instance::value get_year(HulaScript::instance& instance);
-
-		HulaScript::instance::value get_hour(HulaScript::instance& instance);
-		HulaScript::instance::value get_minute(HulaScript::instance& instance);
-		HulaScript::instance::value get_second(HulaScript::instance& instance);
-
-	public:
-		date_time_obj(time_t timestamp) : timestamp(timestamp) {
-			declare_getter("day", &date_time_obj::get_day);
-			declare_getter("month", &date_time_obj::get_month);
-			declare_getter("year", &date_time_obj::get_year);
-
-			declare_getter("hour", &date_time_obj::get_hour);
-			declare_getter("min", &date_time_obj::get_minute);
-			declare_getter("sec", &date_time_obj::get_second);
-		}
-
-		std::string to_string() override;
-	};
-
 	DYNALO_EXPORT const char** DYNALO_CALL manifest(HulaScript::instance::foreign_object* foreign_obj);
 
 	DYNALO_EXPORT HulaScript::instance::value DYNALO_CALL openFile(std::vector<HulaScript::instance::value>& args, HulaScript::instance& instance);
@@ -91,10 +66,11 @@ namespace HulaUtils {
 	DYNALO_EXPORT HulaScript::instance::value DYNALO_CALL rem(std::vector<HulaScript::instance::value>& args, HulaScript::instance& instance);
 	DYNALO_EXPORT HulaScript::instance::value DYNALO_CALL remAll(std::vector<HulaScript::instance::value>& args, HulaScript::instance& instance);
 
-	DYNALO_EXPORT HulaScript::instance::value DYNALO_CALL runCommand(std::vector<HulaScript::instance::value>& args, HulaScript::instance& instance);
+	DYNALO_EXPORT HulaScript::instance::value DYNALO_CALL runCmd(std::vector<HulaScript::instance::value>& args, HulaScript::instance& instance);
 
 	DYNALO_EXPORT HulaScript::instance::value DYNALO_CALL JSONParser(std::vector<HulaScript::instance::value>& args, HulaScript::instance& instance);
 	DYNALO_EXPORT HulaScript::instance::value DYNALO_CALL toJSON(std::vector<HulaScript::instance::value>& args, HulaScript::instance& instance);
 
-	DYNALO_EXPORT HulaScript::instance::value DYNALO_CALL currentTime(std::vector<HulaScript::instance::value>& args, HulaScript::instance& instance);
+	DYNALO_EXPORT HulaScript::instance::value DYNALO_CALL localTime(std::vector<HulaScript::instance::value>& args, HulaScript::instance& instance);
+	DYNALO_EXPORT HulaScript::instance::value DYNALO_CALL gmTime(std::vector<HulaScript::instance::value>& args, HulaScript::instance& instance);
 }

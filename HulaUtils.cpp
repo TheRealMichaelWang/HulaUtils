@@ -15,10 +15,11 @@ DYNALO_EXPORT const char** DYNALO_CALL HulaUtils::manifest(HulaScript::instance:
 		"dirTraverse",
 		"rem",
 		"remAll",
-		"runCommand",
+		"runCmd",
 		"JSONParser",
 		"toJSON",
-		"currentTime",
+		"localTime",
+		"gmTime",
 		NULL
 	};
 
@@ -89,7 +90,7 @@ DYNALO_EXPORT HulaScript::instance::value DYNALO_CALL HulaUtils::remAll(std::vec
 	return instance.rational_integer(std::filesystem::remove_all(args[0].str(instance)));
 }
 
-DYNALO_EXPORT HulaScript::instance::value DYNALO_CALL HulaUtils::runCommand(std::vector<HulaScript::instance::value>& args, HulaScript::instance& instance)
+DYNALO_EXPORT HulaScript::instance::value DYNALO_CALL HulaUtils::runCmd(std::vector<HulaScript::instance::value>& args, HulaScript::instance& instance)
 {
 	std::string cmd;
 	for (auto& arg : args) {

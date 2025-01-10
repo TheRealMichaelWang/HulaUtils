@@ -3,56 +3,46 @@
 
 using namespace HulaUtils;
 
-HulaScript::instance::value date_time_obj::get_day(HulaScript::instance& instance)
-{
-	auto dt = localtime(&timestamp);
-	return instance.rational_integer(dt->tm_mday);
-}
-
-HulaScript::instance::value date_time_obj::get_month(HulaScript::instance& instance)
-{
-	auto dt = localtime(&timestamp);
-	return instance.rational_integer(dt->tm_mon + 1);
-}
-
-HulaScript::instance::value date_time_obj::get_year(HulaScript::instance& instance)
-{
-	auto dt = localtime(&timestamp);
-	return instance.rational_integer(dt->tm_year + 1900);
-}
-
-HulaScript::instance::value date_time_obj::get_hour(HulaScript::instance& instance)
-{
-	auto dt = localtime(&timestamp);
-	return instance.rational_integer(dt->tm_hour);
-}
-
-HulaScript::instance::value date_time_obj::get_minute(HulaScript::instance& instance)
-{
-	auto dt = localtime(&timestamp);
-	return instance.rational_integer(dt->tm_min);
-}
-
-HulaScript::instance::value date_time_obj::get_second(HulaScript::instance& instance)
-{
-	auto dt = localtime(&timestamp);
-	return instance.rational_integer(dt->tm_sec);
-}
-
-std::string HulaUtils::date_time_obj::to_string() 
-{
-	std::stringstream ss;
-	auto dt = localtime(&timestamp);
+static HulaScript::instance::value toDateTimeObject(struct tm* datetime, std::optional<time_t> timestamp, HulaScript::instance& instance) {
+	std::vector<std::pair<std::string, HulaScript::instance::value>> properties;
+	properties.push_back(std::make_pair("day", instance.rational_integer(datetime->tm_mday)));
+	properties.push_back(std::make_pair("month", instance.rational_integer(datetime->tm_mon + 1)));
+	properties.push_back(std::make_pair("year", instance.rational_integer(datetime->tm_year + 1900)));
+	properties.push_back(std::make_pair("hour", instance.rational_integer(datetime->tm_hour)));
+	properties.push_back(std::make_pair("min", instance.rational_integer(datetime->tm_min)));
+	properties.push_back(std::make_pair("sec", instance.rational_integer(datetime->tm_sec)));
 	
-	ss << (dt->tm_mon + 1) << '/' << dt->tm_mday << '/' << (dt->tm_year + 1900) << ' ' << dt->tm_hour << ':' << dt->tm_min << ':' << dt->tm_sec;
+	if (timestamp.has_value()) {
+		properties.push_back(std::make_pair("unix", instance.rational_integer(timestamp.value())));
+	}
 
-	return ss.str();
+	return instance.make_table_obj(properties, true);
 }
 
-DYNALO_EXPORT HulaScript::instance::value DYNALO_CALL HulaUtils::currentTime(std::vector<HulaScript::instance::value>& args, HulaScript::instance& instance)
+DYNALO_EXPORT HulaScript::instance::value DYNALO_CALL HulaUtils::localTime(std::vector<HulaScript::instance::value>& args, HulaScript::instance& instance)
 {
 	time_t now;
-	time(&now);
+	if (args.size() == 1) {
+		now = args.at(0).size(instance);
+	}
+	else {
+		time(&now);
+	}
 
-	return instance.add_foreign_object(std::make_unique<date_time_obj>(now));
+	auto dt = localtime(&now);
+	return toDateTimeObject(dt, now, instance);
+}
+
+DYNALO_EXPORT HulaScript::instance::value DYNALO_CALL HulaUtils::gmTime(std::vector<HulaScript::instance::value>& args, HulaScript::instance& instance)
+{
+	time_t now;
+	if (args.size() == 1) {
+		now = args.at(0).size(instance);
+	}
+	else {
+		time(&now);
+	}
+
+	auto dt = gmtime(&now);
+	return toDateTimeObject(dt, now, instance);
 }
